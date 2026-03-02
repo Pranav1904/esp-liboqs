@@ -1,4 +1,4 @@
 [submodule "liboqs"]
 	path = liboqs
-    url = https://github.com/Pranav1904/esp-liboqs.git
+    url = https://github.com/Pranav1904/liboqs.git
     branch = riscv
