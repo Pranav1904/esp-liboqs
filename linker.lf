@@ -1,0 +1,7 @@
+[mapping:liboqs_math_optimisation]
+archive: liboqs.a
+entries:
+    ntt(noflash)
+    reduce(noflash)
+    poly(noflash)
+

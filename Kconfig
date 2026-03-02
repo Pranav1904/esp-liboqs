@@ -68,6 +68,13 @@ menu "liboqs Post-Quantum Cryptography"
                 Original Kyber from NIST Round 3 (pre-standardization).
                 Consider using ML-KEM instead for the standardized version.
 
+        config LIBOQS_ENABLE_KEM_NTRU
+            bool "Enable NTRU KEM"
+            default n
+            help
+                NTRU - Lattice-based KEM.
+                Adds approximately 52 KB to binary size.
+
         comment "Digital Signature Schemes"
 
         config LIBOQS_ENABLE_SIG_ML_DSA
@@ -127,6 +134,15 @@ menu "liboqs Post-Quantum Cryptography"
                 SNOVA - Multivariate signature scheme.
 
                 Note: Large variants are automatically disabled for ESP32.
+
+        config LIBOQS_ENABLE_SIG_SLH_DSA
+            bool "Enable SLH-DSA (FIPS 205)"
+            default n
+            help
+                SLH-DSA - Hash-based signature scheme (FIPS 205).
+
+                Standardized hash-based signatures with multiple variants.
+                Adds approximately 50 KB to binary size due to Keccak/SHA3.
 
     endmenu
 
@@ -211,12 +227,72 @@ menu "liboqs Post-Quantum Cryptography"
                 esp_fill_random() uses the hardware RNG and is cryptographically
                 secure. This is the recommended option for production use.
 
+        config LIBOQS_MINIMAL_COMMON
+            bool "Minimal common layer (exclude SHA3/fips202 from common)"
+            default n
+            help
+                Exclude SHA3, SHA2, and fips202 from the liboqs common layer to
+                reduce binary size. For signature_basic: enable this when you use
+                ONLY ML-DSA (with the Kyber backend). ML-DSA uses its own
+                fips202_kyber; the common SHA3/fips202 are not needed.
+                Do not enable if you also enable FALCON, SPHINCS+, or other
+                signature schemes that need the common hash layer.
+
         config LIBOQS_VERBOSE_LOGGING
             bool "Enable verbose logging"
             default n
             help
                 Enable detailed logging of liboqs operations.
                 Useful for debugging but increases code size.
+
+        config LIBOQS_ENABLE_FUNCTION_TRACE
+            bool "Enable function instrumentation for profiling"
+            default n
+            help
+                Compile liboqs with -finstrument-functions so enter/exit hooks
+                (e.g. liboqs_function_trace.c) can log or profile calls.
+                Disable for production to improve speed.
+
+    endmenu
+
+    menu "Profiling"
+        depends on LIBOQS_ENABLED
+
+        config LIBOQS_ENABLE_PROFILING
+            bool "Enable ESP32-specific profiling"
+            default n
+            help
+                Enable ESP32-specific profiling infrastructure for liboqs functions.
+                
+                When enabled, you can instrument liboqs functions to measure:
+                - Call counts
+                - Execution time (microseconds)
+                - CPU cycles
+                - Min/Max/Average execution times
+                
+                This uses esp_timer for microsecond timing and CPU cycle counters
+                when available (Xtensa CCOUNT, RISC-V mcycle).
+                
+                WARNING: Profiling adds overhead. Disable for production.
+
+        config LIBOQS_PROFILE_MAX_ENTRIES
+            int "Maximum number of profiled functions"
+            depends on LIBOQS_ENABLE_PROFILING
+            default 100
+            range 10 500
+            help
+                Maximum number of unique functions that can be profiled.
+                Each entry uses ~72 bytes of RAM.
+                
+                Default 100 = ~7.2 KB
+                
+        config LIBOQS_PROFILE_AUTO_INIT
+            bool "Automatically initialize profiling"
+            depends on LIBOQS_ENABLE_PROFILING
+            default y
+            help
+                Automatically initialize the profiling system at startup.
+                If disabled, you must call esp_liboqs_profile_init() manually.
 
     endmenu
 

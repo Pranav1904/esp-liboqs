@@ -3,8 +3,10 @@
 idf_component_register(
     SRCS "src/esp_rand_adapter.c"
          "src/esp_liboqs_init.c"
+         "src/esp_liboqs_profile.c"
     INCLUDE_DIRS "include"
-    REQUIRES esp_hw_support
+    REQUIRES esp_hw_support esp_timer
+    LDFRAGMENTS linker.lf
     PRIV_REQUIRES esp_system
 )
 
@@ -51,107 +53,127 @@ if(CONFIG_LIBOQS_ENABLED)
     set(LD_SUPPORTS_WL_Z_NOEXECSTACK OFF)
 
     # Algorithm selection via Kconfig (Zephyr pattern lines 58-154)
-
+    # Use FORCE so Kconfig always wins over any stale CMake cache from liboqs (liboqs defaults many options ON)
     # KEMs
     if(CONFIG_LIBOQS_ENABLE_KEM_ML_KEM)
-        set(OQS_ENABLE_KEM_ML_KEM ON CACHE BOOL "")
+        set(OQS_ENABLE_KEM_ML_KEM ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_KEM_ML_KEM OFF CACHE BOOL "")
+        set(OQS_ENABLE_KEM_ML_KEM OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_KEM_BIKE)
-        set(OQS_ENABLE_KEM_BIKE ON CACHE BOOL "")
+        set(OQS_ENABLE_KEM_BIKE ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_KEM_BIKE OFF CACHE BOOL "")
+        set(OQS_ENABLE_KEM_BIKE OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_KEM_FRODOKEM)
-        set(OQS_ENABLE_KEM_FRODOKEM ON CACHE BOOL "")
+        set(OQS_ENABLE_KEM_FRODOKEM ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_KEM_FRODOKEM OFF CACHE BOOL "")
+        set(OQS_ENABLE_KEM_FRODOKEM OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_KEM_NTRUPRIME)
-        set(OQS_ENABLE_KEM_NTRUPRIME ON CACHE BOOL "")
+        set(OQS_ENABLE_KEM_NTRUPRIME ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_KEM_NTRUPRIME OFF CACHE BOOL "")
+        set(OQS_ENABLE_KEM_NTRUPRIME OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_KEM_CLASSIC_MCELIECE)
-        set(OQS_ENABLE_KEM_CLASSIC_MCELIECE ON CACHE BOOL "")
+        set(OQS_ENABLE_KEM_CLASSIC_MCELIECE ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_KEM_CLASSIC_MCELIECE OFF CACHE BOOL "")
+        set(OQS_ENABLE_KEM_CLASSIC_MCELIECE OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_KEM_HQC)
-        set(OQS_ENABLE_KEM_HQC ON CACHE BOOL "")
+        set(OQS_ENABLE_KEM_HQC ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_KEM_HQC OFF CACHE BOOL "")
+        set(OQS_ENABLE_KEM_HQC OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_KEM_KYBER)
-        set(OQS_ENABLE_KEM_KYBER ON CACHE BOOL "")
+        set(OQS_ENABLE_KEM_KYBER ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_KEM_KYBER OFF CACHE BOOL "")
+        set(OQS_ENABLE_KEM_KYBER OFF CACHE BOOL "From Kconfig" FORCE)
+    endif()
+
+    if(CONFIG_LIBOQS_ENABLE_KEM_NTRU)
+        set(OQS_ENABLE_KEM_NTRU ON CACHE BOOL "From Kconfig" FORCE)
+    else()
+        set(OQS_ENABLE_KEM_NTRU OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     # Signatures
     if(CONFIG_LIBOQS_ENABLE_SIG_ML_DSA)
-        set(OQS_ENABLE_SIG_ML_DSA ON CACHE BOOL "")
+        set(OQS_ENABLE_SIG_ML_DSA ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_SIG_ML_DSA OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_ML_DSA OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_SIG_FALCON)
-        set(OQS_ENABLE_SIG_FALCON ON CACHE BOOL "")
+        set(OQS_ENABLE_SIG_FALCON ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_SIG_FALCON OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_FALCON OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_SIG_SPHINCS)
-        set(OQS_ENABLE_SIG_SPHINCS ON CACHE BOOL "")
+        set(OQS_ENABLE_SIG_SPHINCS ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_SIG_SPHINCS OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_SPHINCS OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_SIG_MAYO)
-        set(OQS_ENABLE_SIG_MAYO ON CACHE BOOL "")
+        set(OQS_ENABLE_SIG_MAYO ON CACHE BOOL "From Kconfig" FORCE)
         # Disable MAYO-5 due to size (from Zephyr lines 119-120)
-        set(OQS_ENABLE_SIG_mayo_5 OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_mayo_5 OFF CACHE BOOL "" FORCE)
     else()
-        set(OQS_ENABLE_SIG_MAYO OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_MAYO OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_SIG_UOV)
-        set(OQS_ENABLE_SIG_UOV ON CACHE BOOL "")
+        set(OQS_ENABLE_SIG_UOV ON CACHE BOOL "From Kconfig" FORCE)
     else()
-        set(OQS_ENABLE_SIG_UOV OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_UOV OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_SIG_CROSS)
-        set(OQS_ENABLE_SIG_CROSS ON CACHE BOOL "")
+        set(OQS_ENABLE_SIG_CROSS ON CACHE BOOL "From Kconfig" FORCE)
         # Disable CROSS variants with large stack usage (from Zephyr lines 133-139)
-        set(OQS_ENABLE_SIG_cross_rsdp_128_small OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_cross_rsdp_192_small OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_cross_rsdp_256_balanced OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_cross_rsdp_256_small OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_cross_rsdpg_192_small OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_cross_rsdpg_256_small OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_cross_rsdp_128_small OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_cross_rsdp_192_small OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_cross_rsdp_256_balanced OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_cross_rsdp_256_small OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_cross_rsdpg_192_small OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_cross_rsdpg_256_small OFF CACHE BOOL "" FORCE)
     else()
-        set(OQS_ENABLE_SIG_CROSS OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_CROSS OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     if(CONFIG_LIBOQS_ENABLE_SIG_SNOVA)
-        set(OQS_ENABLE_SIG_SNOVA ON CACHE BOOL "")
+        set(OQS_ENABLE_SIG_SNOVA ON CACHE BOOL "From Kconfig" FORCE)
         # Disable large SNOVA variants (from Zephyr lines 145-151)
-        set(OQS_ENABLE_SIG_snova_SNOVA_56_25_2 OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_snova_SNOVA_49_11_3 OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_snova_SNOVA_37_8_4 OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_snova_SNOVA_60_10_4 OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_snova_SNOVA_24_5_5 OFF CACHE BOOL "")
-        set(OQS_ENABLE_SIG_snova_SNOVA_29_6_5 OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_snova_SNOVA_56_25_2 OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_snova_SNOVA_49_11_3 OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_snova_SNOVA_37_8_4 OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_snova_SNOVA_60_10_4 OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_snova_SNOVA_24_5_5 OFF CACHE BOOL "" FORCE)
+        set(OQS_ENABLE_SIG_snova_SNOVA_29_6_5 OFF CACHE BOOL "" FORCE)
     else()
-        set(OQS_ENABLE_SIG_SNOVA OFF CACHE BOOL "")
+        set(OQS_ENABLE_SIG_SNOVA OFF CACHE BOOL "From Kconfig" FORCE)
+    endif()
+
+    if(CONFIG_LIBOQS_ENABLE_SIG_SLH_DSA)
+        set(OQS_ENABLE_SIG_SLH_DSA ON CACHE BOOL "From Kconfig" FORCE)
+    else()
+        set(OQS_ENABLE_SIG_SLH_DSA OFF CACHE BOOL "From Kconfig" FORCE)
+    endif()
+
+    # Minimal common: exclude SHA3/SHA2/fips202 from common layer (ML-KEM/ML-DSA use their own)
+    if(CONFIG_LIBOQS_MINIMAL_COMMON)
+        set(OQS_EMBEDDED_MINIMAL_COMMON ON CACHE BOOL "From Kconfig" FORCE)
+        message(STATUS "liboqs: Minimal common layer (SHA3/fips202 excluded)")
+    else()
+        set(OQS_EMBEDDED_MINIMAL_COMMON OFF CACHE BOOL "From Kconfig" FORCE)
     endif()
 
     # Override install() and export() commands to prevent liboqs from trying to install
@@ -163,6 +185,19 @@ if(CONFIG_LIBOQS_ENABLED)
     macro(export)
         # No-op: prevent liboqs from trying to export targets
     endmacro()
+
+    # Restore install() and export() commands
+    macro(install)
+        _install(${ARGV})
+    endmacro()
+
+    macro(export)
+        _export(${ARGV})
+    endmacro()
+
+    # Make ESP32 profiling headers available to all liboqs sub-targets
+    # We use include_directories() here so it propagates to all subdirectories
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
     # Add the actual liboqs targets (from Zephyr line 157)
     add_subdirectory(liboqs liboqs_build EXCLUDE_FROM_ALL)
@@ -191,15 +226,6 @@ if(CONFIG_LIBOQS_ENABLED)
 
     disable_pic_for_all_targets(liboqs)
 
-    # Restore install() and export() commands
-    macro(install)
-        _install(${ARGV})
-    endmacro()
-
-    macro(export)
-        _export(${ARGV})
-    endmacro()
-
     # Add liboqs include directory to the component
     target_include_directories(${COMPONENT_LIB} PUBLIC
         "${CMAKE_CURRENT_BINARY_DIR}/liboqs_build/include"
@@ -211,7 +237,7 @@ if(CONFIG_LIBOQS_ENABLED)
     # Make liboqs build before this component
     add_dependencies(${COMPONENT_LIB} oqs)
 
-    # Apply ESP-IDF compiler flags to liboqs
+    # Apply ESP-IDF compiler flags to liboqs with SAFE loop unrolling
     target_compile_options(oqs PRIVATE
         ${CONFIG_COMPILER_OPTIMIZATION_LEVEL}
     )

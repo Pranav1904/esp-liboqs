@@ -10,6 +10,10 @@ static const char *TAG = "liboqs";
 // Forward declaration from esp_rand_adapter.c
 extern esp_err_t esp_liboqs_rng_init(void);
 
+#ifdef CONFIG_LIBOQS_ENABLE_PROFILING
+#include "esp_liboqs_profile.h"
+#endif
+
 /**
  * @brief Auto-initialize liboqs at startup
  *
@@ -38,6 +42,14 @@ void esp_liboqs_init(void)
         ESP_LOGE(TAG, "Failed to initialize RNG");
         return;
     }
+
+#ifdef CONFIG_LIBOQS_ENABLE_PROFILING
+#ifdef CONFIG_LIBOQS_PROFILE_AUTO_INIT
+    // Initialize profiling system
+    esp_liboqs_profile_init();
+    ESP_LOGI(TAG, "Profiling system initialized");
+#endif
+#endif
 
     // Log enabled algorithms
     ESP_LOGI(TAG, "Enabled KEMs: %zu, Signatures: %zu",
