@@ -3,7 +3,6 @@
 idf_component_register(
     SRCS "src/esp_rand_adapter.c"
          "src/esp_liboqs_init.c"
-         "src/esp_liboqs_profile.c"
     INCLUDE_DIRS "include"
     REQUIRES esp_hw_support 
     LDFRAGMENTS linker.lf

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "esp_liboqs_profile.h"
-#include "esp_timer.h"
 #include "esp_log.h"
 #include <string.h>
 #include <stdlib.h>
