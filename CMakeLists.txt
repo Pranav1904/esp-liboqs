@@ -5,7 +5,7 @@ idf_component_register(
          "src/esp_liboqs_init.c"
          "src/esp_liboqs_profile.c"
     INCLUDE_DIRS "include"
-    REQUIRES esp_hw_support esp_timer
+    REQUIRES esp_hw_support 
     LDFRAGMENTS linker.lf
     PRIV_REQUIRES esp_system
 )
